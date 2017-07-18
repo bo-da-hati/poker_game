@@ -45,10 +45,11 @@
 let cards = [];            // カードの山
 let coins = 30;            // プレイヤーの保有コイン数
 let player_cards = [];     // プレイヤーに配られたカード
+let random_card = [];
 const MIN_BET_COINS = 1;   // 一度に掛けられるコインの最小枚数
 const MAX_BET_COINS = 10;  // 一度に掛けられるコインの最大枚数
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // 保有コイン数を表示
     document.getElementById('coins').textContent = coins;
 
@@ -62,17 +63,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 「ゲームを始める」ボタンがクリックされたらカードを配る
-    document.getElementById('play').addEventListener('click', function() {
+    document.getElementById('play').addEventListener('click', function () {
         playStart();
     });
 
     // 「交換する」ボタンがクリックされたらカードを交換し、役を評価する
-    document.getElementById('trade').addEventListener('click', function() {
+    document.getElementById('trade').addEventListener('click', function () {
         tradeAndJudge();
     });
 
     // 「次のゲームへ」ボタンがクリックされたら、画面を初期状態に戻す
-    document.getElementById('continue').addEventListener('click', function() {
+    document.getElementById('continue').addEventListener('click', function () {
         nextGame();
     });
 
@@ -85,16 +86,20 @@ document.addEventListener('DOMContentLoaded', function() {
 // ・カードをシャッフルする
 // ・カードの山から5枚、プレイヤーに配る
 function playStart() {
-        cards = createShuffledCards();
-        console.log("カードの山(cards): ", cards);
+    randomAry = createShuffledCards();
+    //for (i = 0; i < 5; i++) {
 
-        let drawn_cards = drawCards(cards, 5);
-        console.log("引いたカード(drawn_cards): ", drawn_cards);
-        console.log("残りのカード枚数: ", cards.length);
-        player_cards = drawn_cards;
+    //}
 
-        showElement(document.getElementById('poker_table'), true);
-        showPlayerCards();
+    //console.log("カードの山(cards): ", cards);
+
+    let drawn_cards = drawCards(randomAry, 5);
+    //console.log("引いたカード(drawn_cards): ", drawn_cards);
+    //console.log("残りのカード枚数: ", cards.length);
+    player_cards = drawn_cards;
+
+    showElement(document.getElementById('poker_table'), true);
+    showPlayerCards();
 }
 
 // 選択されたカードを交換し、役を評価する
@@ -112,6 +117,7 @@ function tradeAndJudge() {
     // カードを交換
     player_cards = tradeCards(cards, player_cards, selected_card_indexes);
     console.log("交換後のカード(player_cards): ", player_cards);
+
 
     // 交換後のカードを表示
     showPlayerCards();
@@ -140,6 +146,7 @@ function showPlayerCards() {
 
     // カード要素を生成し、追加する
     player_cards_element.innerHTML = "";
+    // プレイヤーに配られたカード
     for (let card of player_cards) {
         let card_element = document.createElement('div');
         card_element.setAttribute('class', 'player_card');
@@ -147,7 +154,7 @@ function showPlayerCards() {
         player_cards_element.appendChild(card_element);
 
         // カードクリックで選択状態を切り替える('selected'クラスの付け外しを行う)
-        card_element.addEventListener('click', function() {
+        card_element.addEventListener('click', function () {
             card_element.classList.toggle('selected');
         });
     }
@@ -175,18 +182,36 @@ function createShuffledCards() {
     // この例ではカードを文字列で表現しているが、
     // 扱いにくい場合はオブジェクト型などに適宜変更してOK
     let cards = [];
+
     for (let suit of ["♠️", "♥️", "♦️", "♣️"]) {
         for (let i = 1; i <= 13; i++) {
             let card = suit + String(i);
             cards.push(card);
         }
+
     }
+    let Ary = [];
+    for (i = 0; i < cards.length; i++) {
+        random = cards[Math.floor(Math.random() * cards.length)];
+        Ary.push(random);
+
+    }
+
+
+
+
+    //Ary.push(random);
+
+
+
+
+
 
     // FIXME:
     // cardsはシャッフルされていない
     // cardsをシャッフルされたものにするにはどうしたらいいか？
 
-    return cards;
+    return Ary;
 }
 
 // [Q1-2]
@@ -198,15 +223,24 @@ function createShuffledCards() {
 // 戻り値: 引いたカードの配列
 //
 // 注意: 引いたカードはcardsから取り除かれる
-function drawCards(cards, count) {
+function drawCards(randomAry, count) {
 
     // FIXME:
     // 以下の方法では、カードが1枚しか引かれない
     // count枚引かれるようにするにはどうしたらいいか？
     // また、戻り値を引いたカードの配列になるよう修正すること
-    let drawn_card = cards.shift();
+let playerAry = []
+for(i = 0;i < count;i++){
+playerAry.push(randomAry[i]);
 
-    return ["♠️1", "♠️2", "♠️3", "♠️4", "♠️5"];    // FIXME: 引いたカードの配列に修正！
+}
+
+   
+
+    //let drawn_card = cards.shift();
+
+
+    return playerAry;    // FIXME: 引いたカードの配列に修正！
 }
 
 // [Q1-2.2]
@@ -237,5 +271,5 @@ function evaluateCardValue(card) {
 
     // FIXME: cardの役を判定し、適切な戻り値を返すこと
 
-    return {hand: "ブタ", rate: 0};
+    return { hand: "ブタ", rate: 0 };
 }
